@@ -5,11 +5,6 @@ pipeline {
         disableConcurrentBuilds()
     }
 
-    environment {
-        IMAGE_NAME = "aceest-fitness"
-        IMAGE_TAG  = "${env.BUILD_NUMBER}"
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -29,25 +24,21 @@ pipeline {
             }
         }
 
+        stage('Build (compile check)') {
+            steps {
+                sh '''
+                    . venv/bin/activate
+                    python -m py_compile app.py
+                '''
+            }
+        }
+
         stage('Run Unit Tests') {
             steps {
                 sh '''
                     . venv/bin/activate
                     pytest -v
                 '''
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                echo 'Performing clean Docker build...'
-                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
-            }
-        }
-
-        stage('Test Inside Container') {
-            steps {
-                sh 'docker run --rm ${IMAGE_NAME}:${IMAGE_TAG} sh -c "pip install --no-cache-dir pytest && pytest -v"'
             }
         }
     }
@@ -60,7 +51,7 @@ pipeline {
             echo 'BUILD FAILED: Check the logs above.'
         }
         always {
-            cleanWs()
+            deleteDir()
         }
     }
 }

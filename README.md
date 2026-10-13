@@ -128,13 +128,12 @@ A declarative pipeline acting as the **primary BUILD phase / quality gate**:
 
 1. **Checkout** — pulls the latest code from GitHub.
 2. **Install Dependencies** — provisions a clean virtual environment.
-3. **Run Unit Tests** — validates application logic with Pytest.
-4. **Docker Build** — performs a clean build of the container image.
-5. **Test Inside Container** — confirms the image works end-to-end.
+3. **Build (compile check)** — byte-compiles the application to catch syntax errors.
+4. **Run Unit Tests** — validates application logic with Pytest.
 
-Together, Jenkins provides a controlled BUILD environment as a secondary
-validation layer, while GitHub Actions guarantees that the Build and Test
-stages pass automatically on every push.
+Jenkins provides a controlled BUILD environment as a secondary validation layer,
+while GitHub Actions handles Docker image assembly and in-container testing and
+guarantees that the Build and Test stages pass automatically on every push.
 
 ---
 
